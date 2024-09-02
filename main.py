@@ -1,22 +1,36 @@
+from typing import Generator
 import json
 from pprint import pprint
+import datetime
+from enum import Enum
 
 FILE_NAME: str = "data.json"
+ID_START: int = 0
+
+class Status(Enum):
+    TODO = "todo"
+    IN_PROGRESS = "in_progress"
+    DONE = "done"
+
 
 def write_json(data: list[dict | None] = [], indent: int = 4) -> None:
     try:
         print("Writing JSON data")
         with open(FILE_NAME, "w") as file:
-            json.dump(data, file, indent=indent, )
+            json.dump(data, file, indent=indent)
         print("Success!")
     except Exception as e:
         print(f"Error occurred while writing JSON data from file: {e}")
 
 
 def read_json() -> list[dict]:
+    global ID_START
     try:
         with open(FILE_NAME, "r") as file:
-            return json.load(file)
+            data = json.load(file)
+            if data:
+                ID_START = data[-1]["id"]
+            return data
     except FileNotFoundError:
         print("File not found.\nCreating new file.")
         write_json()
@@ -29,20 +43,71 @@ def update_json(user_data: dict, data: list[dict]) -> dict: ...
 def delete_json(task_id: int, data: list[dict]) -> dict: ...
 
 
-def add_json(user_data: dict, data: dict) -> dict:
-    new_data = data.copy()
-    new_data.append(user_data)
-    pprint(new_data)
-    with open(FILE_NAME, "w") as file:
-        json.dump(new_data, file)
+def add_json(id: int, user_input: list[str], data: list) -> dict:
+    user_input: list = " ".join(user_input[1:])
+    try:
+        user_input = user_input.split('" "')
+        task, description = user_input[0], user_input[1]
+    except Exception:
+        task, description = str(user_input[0]).replace('"', ""), None
+
+    new_task = {
+        "id": id,
+        "task": task,
+        "status": Status.IN_PROGRESS,
+        "description": description,
+        "createdAT": str(datetime.datetime.now()),
+        "updatedAT": None,
+    }
+    data.append(new_task)
+
+    write_json(data)
+    pprint(new_task)
     
+def filter_data(user_input: list[str], data: list[dict]) -> list[dict]:
+    if len(user_input) == 1:
+        pprint(data)
+    try:
+        filter_by = user_input[1]
+        print(filter_by)
+        filter_data = [i for i in data if i["status"] == filter_by]
+        pprint(filter_data)
+    except Exception as e:
+        print(f"Error occurred while filtering data: {e}")
+        return
+
+
+def generate_id() -> Generator:
+    global ID_START
+    i = ID_START
+    while True:
+        i += 1
+        yield i
 
 
 def main():
-    data = read_json()
-    user_data: dict[str, str] = {"id": "1", "task": "John"}
-    add_json(user_data, data)
-    
+    id: Generator = generate_id()
+
+    while True:
+        data: list[dict] = read_json()
+        user_input: list[str] = input("task_cli: ").split(" ")
+
+        match user_input[0]:
+            case "add":
+                new_id: int = next(id)
+                add_json(new_id, user_input, data)
+
+            case "delete":
+                ...
+
+            case "update":
+                ...
+            
+            case "list":
+                filter_data(user_input, data)              
+
+            case "exit":
+                ...
 
 
 if __name__ == "__main__":
