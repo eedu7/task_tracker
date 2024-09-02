@@ -40,7 +40,6 @@ def read_json() -> list[dict]:
 def update_json(user_data: dict, data: list[dict]) -> dict: ...
 
 
-def delete_json(task_id: int, data: list[dict]) -> dict: ...
 
 
 def add_json(id: int, user_input: list[str], data: list) -> dict:
@@ -54,7 +53,7 @@ def add_json(id: int, user_input: list[str], data: list) -> dict:
     new_task = {
         "id": id,
         "task": task,
-        "status": Status.IN_PROGRESS,
+        "status": Status.IN_PROGRESS.value,
         "description": description,
         "createdAT": str(datetime.datetime.now()),
         "updatedAT": None,
@@ -62,11 +61,12 @@ def add_json(id: int, user_input: list[str], data: list) -> dict:
     data.append(new_task)
 
     write_json(data)
-    pprint(new_task)
+    print(f"Task added successfully: (ID: {new_task.get('id')})")
     
 def filter_data(user_input: list[str], data: list[dict]) -> list[dict]:
     if len(user_input) == 1:
-        pprint(data)
+        print(data)
+        return
     try:
         filter_by = user_input[1]
         print(filter_by)
@@ -85,12 +85,18 @@ def generate_id() -> Generator:
         yield i
 
 
+def delete_json(task_id: int, data: list[dict]) -> dict:
+    data = list(filter(lambda x: x["id"] != int(task_id), data))
+    pprint(data)
+    write_json(data)
+    print(f"Task with ID {task_id} deleted successfully.")
+
 def main():
     id: Generator = generate_id()
 
     while True:
         data: list[dict] = read_json()
-        user_input: list[str] = input("task_cli: ").split(" ")
+        user_input: list[str] = input("task-cli ").split(" ")
 
         match user_input[0]:
             case "add":
@@ -98,7 +104,7 @@ def main():
                 add_json(new_id, user_input, data)
 
             case "delete":
-                ...
+                delete_json(user_input[1], data)
 
             case "update":
                 ...
@@ -107,7 +113,8 @@ def main():
                 filter_data(user_input, data)              
 
             case "exit":
-                ...
+                break
+            
 
 
 if __name__ == "__main__":
