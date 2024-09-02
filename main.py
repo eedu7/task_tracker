@@ -1,11 +1,12 @@
-from typing import Generator
-import json
-from pprint import pprint
 import datetime
+import json
 from enum import Enum
+from pprint import pprint
+from typing import Generator
 
 FILE_NAME: str = "data.json"
 ID_START: int = 0
+
 
 class Status(Enum):
     TODO = "todo"
@@ -37,13 +38,35 @@ def read_json() -> list[dict]:
         return []
 
 
-def update_json(user_data: dict, data: list[dict]) -> dict: ...
+def update_json(user_data: dict, data: list[dict]) -> dict:
+    task_id = int(user_data[1])
+    user_input: list = " ".join(user_data[2:])
 
+    try:
+        updated_task, updated_description = user_input.split('" "')
+        updated_task, updated_description = (
+            updated_task.replace('"', ""),
+            updated_description.replace('"', ""),
+        )
+    except Exception:
+        updated_task, updated_description = user_input, None
+    try:
+        json_obj = list(filter(lambda x: x["id"] == task_id, data))
+        print(json_obj)
+        ind = data.index(json_obj[0])
+        data[ind]["task"] = updated_task
+        if updated_description is not None:
+            data[ind]["description"] = updated_description
+        write_json(data)
+        print(f"Task updated successfully: (ID: {task_id})")
 
+    except Exception as e:
+        print("error ", e)
 
 
 def add_json(id: int, user_input: list[str], data: list) -> dict:
     user_input: list = " ".join(user_input[1:])
+    print(user_input)
     try:
         user_input = user_input.split('" "')
         task, description = user_input[0], user_input[1]
@@ -62,7 +85,8 @@ def add_json(id: int, user_input: list[str], data: list) -> dict:
 
     write_json(data)
     print(f"Task added successfully: (ID: {new_task.get('id')})")
-    
+
+
 def filter_data(user_input: list[str], data: list[dict]) -> list[dict]:
     if len(user_input) == 1:
         print(data)
@@ -91,6 +115,7 @@ def delete_json(task_id: int, data: list[dict]) -> dict:
     write_json(data)
     print(f"Task with ID {task_id} deleted successfully.")
 
+
 def main():
     id: Generator = generate_id()
 
@@ -107,14 +132,13 @@ def main():
                 delete_json(user_input[1], data)
 
             case "update":
-                ...
-            
+                update_json(user_input, data)
+
             case "list":
-                filter_data(user_input, data)              
+                filter_data(user_input, data)
 
             case "exit":
                 break
-            
 
 
 if __name__ == "__main__":
