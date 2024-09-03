@@ -1,0 +1,10 @@
+[
+    {
+        "id": "1",
+        "task": "Buy groceries",
+        "description": "Buy eggs, yoghurt, yeast, cookies, meat and vegetables",
+        "status": "todo",
+        "createdAt": "2024-09-03 20:20:44.428800",
+        "updatedAt": null
+    }
+]

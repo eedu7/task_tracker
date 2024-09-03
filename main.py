@@ -1,6 +1,7 @@
+from pprint import pprint
 
 from TaskHandler import TaskHandler, TaskStatus
-from pprint import pprint
+
 
 def main():
     while True:
@@ -12,15 +13,17 @@ def main():
             case "list":
                 if len(raw_input) == 1:
                     pprint(task_obj.view_task())
-                    
+
                 elif raw_input[1] == "done":
                     pprint(task_obj.view_task(filter_by="status", filter_value="done"))
                 elif raw_input[1] == "in-progress":
-                    pprint(task_obj.view_task(filter_by="status", filter_value="in-progress"))
+                    pprint(
+                        task_obj.view_task(
+                            filter_by="status", filter_value="in-progress"
+                        )
+                    )
                 elif raw_input[1] == "todo":
                     pprint(task_obj.view_task(filter_by="status", filter_value="todo"))
-
-
 
             case "add":
                 user_input = " ".join(raw_input[1:]).split('" "')
@@ -30,6 +33,8 @@ def main():
                 if len(user_input) == 2:
                     description = user_input[1].replace('"', "")
                     response = task_obj.add_task(task, description)
+                    print(response)
+                    return
 
                 response = task_obj.add_task(task)
                 print(response)
