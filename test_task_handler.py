@@ -39,12 +39,14 @@ class TestClass(unittest.TestCase):
 
     def test_read_json(self):
         data = self.obj._read()
-        self.assertIsNone(data)
+        self.assertIsInstance(data, list)
+        self.assertEqual(data, [])
 
     def test_read_json_no_existing_file(self):
         self.new_obj = TaskHandler(filename="no.json")
         data = self.obj._read()
-        self.assertIsNone(data)
+        self.assertIsInstance(data, list)
+        self.assertEqual(data, [])
 
     def test_read_data_json(self):
         dummy_data: list[dict] = [
@@ -96,8 +98,35 @@ class TestClass(unittest.TestCase):
         self.assertIsNotNone(last_task["createdAt"])
         self.assertIsNotNone(last_task["createdAt"])
 
-    # def test_update_task_json(self): ...
+    def test_update_task_json(self):
+        task = "Dummy Task with description"
+        description = "Dummy Task with Description"
 
+        self.obj.add_task(task=task, description=description)
+        
+        data = self.obj._read()
+
+        last_task = data[-1]
+        
+        lastest_task_id= last_task["id"]
+        updated_task = "Updated Dummy Task"
+        updated_description = "Updated Dummy Task Description"
+        self.obj.update_task(lastest_task_id, updated_task, updated_description)
+        
+        data = self.obj._read()
+
+        last_task = data[-1]
+        
+        self.assertEqual(last_task["id"], lastest_task_id)
+        self.assertEqual(last_task["task"], updated_task)
+        self.assertEqual(last_task["description"], updated_description)
+        self.assertEqual(last_task["status"], "todo")
+        self.assertIsNotNone(last_task["id"])
+        self.assertIsNotNone(last_task["createdAt"])
+        self.assertIsNotNone(last_task["createdAt"])
+        
+
+        
     # def test_update_description_json(self): ...
 
     # def test_update_task_and_description_json(self): ...
