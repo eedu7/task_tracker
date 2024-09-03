@@ -7,7 +7,7 @@ Sample solution for the [task-tracker](https://roadmap.sh/projects/task-tracker)
 Clone the repository and run the following command:
 
 ```bash
-git clone https://github.com/arikchakma/backend-projects.git
+git clone https://github.com/eedu7/task_tracker.git
 cd task-tracker
 python main.py
 ```
