@@ -20,9 +20,11 @@ go build -o task-tracker
 
 # To add a task
 ./task-tracker add "Buy groceries"
+./task-tracker add "Do HomeWork" "Do homework of maths and science"
 
 # To update a task
 ./task-tracker update 1 "Buy groceries and cook dinner"
+./task-tracker update 2 "Do homework and project" "Do homework of maths and science and also do the science project"
 
 # To delete a task
 ./task-tracker delete 1
