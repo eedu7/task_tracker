@@ -1,170 +1,80 @@
-import datetime
-import json
-from enum import Enum
+
+from TaskHandler import TaskHandler, TaskStatus
 from pprint import pprint
-from typing import Generator
-
-FILE_NAME: str = "data.json"
-ID_START: int = 0
-
-
-class Status(Enum):
-    TODO = "todo"
-    IN_PROGRESS = "in-progress"
-    DONE = "done"
-
-
-def write_json(data: list[dict | None] = [], indent: int = 4) -> None:
-    try:
-        with open(FILE_NAME, "w") as file:
-            json.dump(data, file, indent=indent)
-    except Exception as e:
-        print(f"Error occurred while writing JSON data from file: {e}")
-
-
-def read_json() -> list[dict]:
-    global ID_START
-    try:
-        with open(FILE_NAME, "r") as file:
-            data = json.load(file)
-            if data:
-                ID_START = data[-1]["id"]
-            return data
-    except FileNotFoundError:
-        print("File not found.\nCreating new file.")
-        write_json()
-        return []
-
-
-def update_json(user_data: dict, data: list[dict]) -> dict:
-    task_id = int(user_data[1])
-    user_input: list = " ".join(user_data[2:])
-
-    try:
-        updated_task, updated_description = user_input.split('" "')
-        updated_task, updated_description = (
-            updated_task.replace('"', ""),
-            updated_description.replace('"', ""),
-        )
-    except Exception:
-        updated_task, updated_description = user_input, None
-    try:
-        json_obj = list(filter(lambda x: x["id"] == task_id, data))
-        ind = data.index(json_obj[0])
-        data[ind]["task"] = updated_task
-        if updated_description is not None:
-            data[ind]["description"] = updated_description
-        data[ind]["updatedAT"] = str(datetime.datetime.now())
-        write_json(data)
-        print(f"Task updated successfully: (ID: {task_id})")
-
-    except Exception as e:
-        print("error ", e)
-
-
-def update_status(task_id, status, data):
-    json_obj = list(filter(lambda x: x["id"] == int(task_id), data))
-    ind = data.index(json_obj[0])
-    if "mark-in-progress" == status:
-        data[ind]["status"] = Status.IN_PROGRESS.value
-    elif "mark-done" == status:
-        data[ind]["status"] = Status.DONE.value
-    elif "mark-todo" == status:
-        data[ind]["status"] = Status.TODO.value
-    data[ind]["updatedAT"] = str(datetime.datetime.now())
-    write_json(data)
-
-
-def add_json(id: int, user_input: list[str], data: list) -> dict:
-    user_input: list = " ".join(user_input[1:])
-    try:
-        user_input = user_input.split('" "')
-        task, description = user_input[0], user_input[1]
-    except Exception:
-        task, description = str(user_input[0]).replace('"', ""), None
-
-    new_task = {
-        "id": id,
-        "task": task,
-        "status": Status.TODO.value,
-        "description": description,
-        "createdAT": str(datetime.datetime.now()),
-        "updatedAT": None,
-    }
-    data.append(new_task)
-
-    write_json(data)
-    print(f"Task added successfully: (ID: {new_task.get('id')})")
-
-
-def filter_data(user_input: list[str], data: list[dict]) -> list[dict]:
-    if len(user_input) == 1:
-        print(data)
-        return
-    try:
-        filter_by = user_input[1]
-        filter_data = [i for i in data if i["status"] == filter_by]
-        pprint(filter_data)
-    except Exception as e:
-        print(f"Error occurred while filtering data: {e}")
-        return
-
-
-def generate_id() -> Generator:
-    global ID_START
-    i = ID_START
-    while True:
-        i += 1
-        yield i
-
-
-def delete_json(task_id: int, data: list[dict]) -> dict:
-    task = [i for i in data if i["id"] == int(task_id)]
-    if not task:
-        print("Task not found.")
-        return
-    task_index = data.index(task[0])
-    del data[task_index]
-    write_json(data)
-    print(f"Task with ID {task_id} deleted successfully.")
-
 
 def main():
-    id: Generator = generate_id()
-
     while True:
-        data: list[dict] = read_json()
-        user_input: list[str] = input("task-cli ").split(" ")
+        task_obj: TaskHandler = TaskHandler()
 
-        match user_input[0]:
+        raw_input: str = input("task-cli: ").split()
+
+        match raw_input[0]:
+            case "list":
+                if len(raw_input) == 1:
+                    pprint(task_obj.view_task())
+                    
+                elif raw_input[1] == "done":
+                    pprint(task_obj.view_task(filter_by="status", filter_value="done"))
+                elif raw_input[1] == "in-progress":
+                    pprint(task_obj.view_task(filter_by="status", filter_value="in-progress"))
+                elif raw_input[1] == "todo":
+                    pprint(task_obj.view_task(filter_by="status", filter_value="todo"))
+
+
+
             case "add":
-                new_id: int = next(id)
-                if len(user_input) == 3 or len(user_input) == 4:
-                    add_json(new_id, user_input, data)
-                else:
-                    print("Invalid input. Please provide task and description.")
-            case "delete":
-                delete_json(user_input[1], data)
+                user_input = " ".join(raw_input[1:]).split('" "')
+                task = user_input[0].replace('"', "")
+
+                # if there is description
+                if len(user_input) == 2:
+                    description = user_input[1].replace('"', "")
+                    response = task_obj.add_task(task, description)
+
+                response = task_obj.add_task(task)
+                print(response)
 
             case "update":
-                update_json(user_input, data)
+                task_id = raw_input[1]
+                if not task_id.isdigit():
+                    print("Invalid id")
+                    continue
+                user_input = " ".join(raw_input[2:]).split('" "')
+                updated_task = user_input[0].replace('"', "")
 
-            case "list":
-                filter_data(user_input, data)
+                if len(user_input) == 2:
+                    updated_description = user_input[1].replace('"', "")
+                    response = task_obj.update_task(
+                        task_id, updated_task, updated_description
+                    )
+
+                else:
+                    response = task_obj.update_task(task_id, updated_task)
+
+                print(response)
+
+            case "delete":
+                task_id: str = raw_input[1]
+
+                response = task_obj.delete_task(task_id)
+                print(response)
 
             case "mark-in-progress":
-                update_status(user_input[1], "mark-in-progress", data)
+                task_id: str = raw_input[1]
+                response = task_obj.update_status(task_id, TaskStatus.IN_PROGRESS.value)
+                print(response)
+            case "mark-todo":
+                task_id: str = raw_input[1]
+                response = task_obj.update_status(task_id, TaskStatus.TODO.value)
+                print(response)
 
             case "mark-done":
-                update_status(user_input[1], "mark-done", data)
+                task_id: str = raw_input[1]
+                response = task_obj.update_status(task_id, TaskStatus.DONE.value)
+                print(response)
 
-            case "mark-todo":
-                update_status(user_input[1], "mark-todo", data)
-
-            case "exit":
-                break
             case _:
-                print("Invalid command. Please try again.")
+                print("Invalid command.")
 
 
 if __name__ == "__main__":

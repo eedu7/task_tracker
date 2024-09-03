@@ -1,50 +1,34 @@
 [
     {
         "id": "1",
-        "task": "Update task",
-        "description": "It should be 13",
+        "task": "Again",
+        "description": "Update Task 1 Description again",
         "status": "todo",
-        "createdAt": "2024-09-03 13:30:11.514221",
-        "updatedAt": "2024-09-03 15:40:34.945628"
+        "createdAt": "2024-09-03 16:01:58.864832",
+        "updatedAt": "2024-09-03 17:18:23.169721"
     },
     {
         "id": "2",
-        "task": "Task ID 13",
-        "description": "updated_description",
+        "task": "In Progress",
+        "description": "Description of In Progress",
         "status": "in-progress",
-        "createdAt": "2024-09-03 13:30:13.766818",
-        "updatedAt": "2024-09-03 15:41:02.939881"
+        "createdAt": "2024-09-03 16:01:58.864832",
+        "updatedAt": "2024-09-03 17:18:23.169721"
     },
     {
         "id": "3",
-        "task": "Task ID 13",
-        "description": "It should be 13",
-        "status": "todo",
-        "createdAt": "2024-09-03 13:30:16.416482",
-        "updatedAt": null
-    },
-    {
-        "id": "6",
-        "task": "Update task",
-        "description": "updated_description",
-        "status": "todo",
-        "createdAt": "2024-09-03 13:30:18.488462",
-        "updatedAt": "2024-09-03 15:42:12.431606"
-    },
-    {
-        "id": "7",
-        "task": "Task ID 13",
-        "description": "It should be 13",
-        "status": "todo",
-        "createdAt": "2024-09-03 13:30:19.015158",
-        "updatedAt": null
-    },
-    {
-        "id": "8",
-        "task": "Task ID 13",
-        "description": "It should be 13",
+        "task": "Done",
+        "description": "Description of In Done",
         "status": "done",
-        "createdAt": "2024-09-03 13:30:19.930840",
-        "updatedAt": null
+        "createdAt": "2024-09-03 16:01:58.864832",
+        "updatedAt": "2024-09-03 17:18:23.169721"
+    },
+    {
+        "id": "4",
+        "task": "Update",
+        "description": "Checking if its works",
+        "status": "todo",
+        "createdAt": "2024-09-03 16:02:22.981296",
+        "updatedAt": "2024-09-03 17:10:24.926828"
     }
 ]

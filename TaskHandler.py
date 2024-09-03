@@ -1,5 +1,4 @@
 import json
-# from pprint import pprint
 from datetime import datetime
 from enum import Enum
 
@@ -70,6 +69,18 @@ class TaskHandler:
         self._create(data)
         return f"Task updated successfully! (ID: {task_id})"
 
+    def update_status(self, task_id: str, update_by: str) -> str:
+        data = self._read()
+
+        task_to_update = self.view_task(filter_by="id", filter_value=task_id)[0]
+        ind: int = data.index(task_to_update)
+
+        data[ind]["status"] = update_by
+
+        self._create(data)
+
+        return f"Task status updated successfully! (ID: {task_id})"
+
     def _read(self) -> list[dict]:
         try:
             with open(self.filename, "r") as file:
@@ -99,11 +110,3 @@ class TaskHandler:
         if data:
             return str(int(data[-1]["id"]) + 1)
         return "1"
-
-
-if __name__ == "__main__":
-    obj: TaskHandler = TaskHandler()
-
-    obj.update_task(
-        "6", updated_task="Update task", updated_description="updated_description"
-    )
