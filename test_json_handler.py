@@ -64,9 +64,32 @@ class TestClass(unittest.TestCase):
 
         self.assertEqual(data, dummy_data)
 
-    # def test_add_task_json(self): ...
+    def test_add_task_json(self):
+        task = "Dummy Task with description"
+        description = "Dummy Task with Description"
 
-    # def test_add_with_description_json(self): ...
+        self.obj.add_task(task=task, description=description)   
+
+        data = self.obj._read()
+
+        last_task = data[-1]
+        
+        self.assertEqual(last_task["task"], task)
+        self.assertEqual(last_task["description"], description)
+
+        
+        
+
+    def test_add_without_description_json(self):
+        task = "Dummy Task without any description"
+
+        self.obj.add_task(task=task)   
+
+        data = self.obj._read()
+
+        last_task = data[-1]
+        
+        self.assertEqual(last_task["task"], task)
 
     # def test_update_task_json(self): ...
 

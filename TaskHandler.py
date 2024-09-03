@@ -25,9 +25,6 @@ class TaskHandler:
             "updatedAt": None,
         }
         data = self.__combine_data(task_data)
-        print("$" * 10)
-        print(data)
-        print("$" * 10)
         self._create(data=data)
         print(f"Task added successfully (ID: {task_id})")
 
