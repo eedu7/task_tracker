@@ -10,16 +10,14 @@ ID_START: int = 0
 
 class Status(Enum):
     TODO = "todo"
-    IN_PROGRESS = "in_progress"
+    IN_PROGRESS = "in-progress"
     DONE = "done"
 
 
 def write_json(data: list[dict | None] = [], indent: int = 4) -> None:
     try:
-        print("Writing JSON data")
         with open(FILE_NAME, "w") as file:
             json.dump(data, file, indent=indent)
-        print("Success!")
     except Exception as e:
         print(f"Error occurred while writing JSON data from file: {e}")
 
@@ -52,7 +50,6 @@ def update_json(user_data: dict, data: list[dict]) -> dict:
         updated_task, updated_description = user_input, None
     try:
         json_obj = list(filter(lambda x: x["id"] == task_id, data))
-        print(json_obj)
         ind = data.index(json_obj[0])
         data[ind]["task"] = updated_task
         if updated_description is not None:
@@ -62,11 +59,22 @@ def update_json(user_data: dict, data: list[dict]) -> dict:
 
     except Exception as e:
         print("error ", e)
+        
+
+def update_status(task_id, status, data):
+    json_obj = list(filter(lambda x: x["id"] == int(task_id), data))
+    ind = data.index(json_obj[0])
+    if "mark-in-progress" == status:
+        data[ind]["status"] = Status.IN_PROGRESS.value
+    elif "mark-done" == status:
+        data[ind]["status"] = Status.DONE.value
+    elif "mark-todo" == status:
+        data[ind]["status"] = Status.TODO.value
+    write_json(data)
 
 
 def add_json(id: int, user_input: list[str], data: list) -> dict:
     user_input: list = " ".join(user_input[1:])
-    print(user_input)
     try:
         user_input = user_input.split('" "')
         task, description = user_input[0], user_input[1]
@@ -76,7 +84,7 @@ def add_json(id: int, user_input: list[str], data: list) -> dict:
     new_task = {
         "id": id,
         "task": task,
-        "status": Status.IN_PROGRESS.value,
+        "status": Status.TODO.value,
         "description": description,
         "createdAT": str(datetime.datetime.now()),
         "updatedAT": None,
@@ -93,7 +101,6 @@ def filter_data(user_input: list[str], data: list[dict]) -> list[dict]:
         return
     try:
         filter_by = user_input[1]
-        print(filter_by)
         filter_data = [i for i in data if i["status"] == filter_by]
         pprint(filter_data)
     except Exception as e:
@@ -136,6 +143,15 @@ def main():
 
             case "list":
                 filter_data(user_input, data)
+                
+            case "mark-in-progress":
+                update_status(user_input[1], "mark-in-progress", data)
+            
+            case "mark-done":
+                update_status(user_input[1], "mark-done", data)
+            
+            case "mark-todo":
+                update_status(user_input[1], "mark-todo", data)
 
             case "exit":
                 break
