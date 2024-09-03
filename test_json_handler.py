@@ -68,28 +68,33 @@ class TestClass(unittest.TestCase):
         task = "Dummy Task with description"
         description = "Dummy Task with Description"
 
-        self.obj.add_task(task=task, description=description)   
+        self.obj.add_task(task=task, description=description)
 
         data = self.obj._read()
 
         last_task = data[-1]
-        
+
         self.assertEqual(last_task["task"], task)
         self.assertEqual(last_task["description"], description)
-
-        
-        
+        self.assertEqual(last_task["status"], "todo")
+        self.assertIsNotNone(last_task["id"])
+        self.assertIsNotNone(last_task["createdAt"])
+        self.assertIsNotNone(last_task["status"])
 
     def test_add_without_description_json(self):
         task = "Dummy Task without any description"
 
-        self.obj.add_task(task=task)   
+        self.obj.add_task(task=task)
 
         data = self.obj._read()
 
         last_task = data[-1]
-        
+
         self.assertEqual(last_task["task"], task)
+        self.assertEqual(last_task["status"], "todo")
+        self.assertIsNotNone(last_task["id"])
+        self.assertIsNotNone(last_task["createdAt"])
+        self.assertIsNotNone(last_task["createdAt"])
 
     # def test_update_task_json(self): ...
 

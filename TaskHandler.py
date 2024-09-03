@@ -1,5 +1,6 @@
 import json
 from enum import Enum
+from pprint import pprint
 from datetime import datetime
 
 
@@ -27,6 +28,15 @@ class TaskHandler:
         data = self.__combine_data(task_data)
         self._create(data=data)
         print(f"Task added successfully (ID: {task_id})")
+    
+    def view_task(self, filter_by: str = "", filter_value: str = ""):
+        data = self._read()
+
+        if not filter_by or not filter_value:
+            return data
+        
+        return list(filter(lambda x: x[filter_by] == filter_value,data))
+
 
     def _read(self) -> list[dict]:
         try:
@@ -50,7 +60,7 @@ class TaskHandler:
         data = self._read()
         data.append(new_data)
         return data
-    
+
     def __task_id(self) -> str:
         data = self._read()
         if data:
@@ -60,4 +70,5 @@ class TaskHandler:
 
 if __name__ == "__main__":
     task_obj: TaskHandler = TaskHandler()
-    task_obj.add_task("Task ID 13", "It should be 13")
+    
+    pprint(task_obj.view_task("task", "Task ID 15"))
