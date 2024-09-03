@@ -59,7 +59,7 @@ def update_json(user_data: dict, data: list[dict]) -> dict:
 
     except Exception as e:
         print("error ", e)
-        
+
 
 def update_status(task_id, status, data):
     json_obj = list(filter(lambda x: x["id"] == int(task_id), data))
@@ -117,8 +117,12 @@ def generate_id() -> Generator:
 
 
 def delete_json(task_id: int, data: list[dict]) -> dict:
-    data = list(filter(lambda x: x["id"] != int(task_id), data))
-    pprint(data)
+    task = [i for i in data if i["id"] == int(task_id)]
+    if not task:
+        print("Task not found.")
+        return
+    task_index = data.index(task[0])
+    del data[task_index]
     write_json(data)
     print(f"Task with ID {task_id} deleted successfully.")
 
@@ -133,8 +137,10 @@ def main():
         match user_input[0]:
             case "add":
                 new_id: int = next(id)
-                add_json(new_id, user_input, data)
-
+                if len(user_input) == 3 or len(user_input) == 4:
+                    add_json(new_id, user_input, data)
+                else:
+                    print("Invalid input. Please provide task and description.")
             case "delete":
                 delete_json(user_input[1], data)
 
@@ -143,18 +149,20 @@ def main():
 
             case "list":
                 filter_data(user_input, data)
-                
+
             case "mark-in-progress":
                 update_status(user_input[1], "mark-in-progress", data)
-            
+
             case "mark-done":
                 update_status(user_input[1], "mark-done", data)
-            
+
             case "mark-todo":
                 update_status(user_input[1], "mark-todo", data)
 
             case "exit":
                 break
+            case _:
+                print("Invalid command. Please try again.")
 
 
 if __name__ == "__main__":

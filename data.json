@@ -1,13 +1,5 @@
 [
     {
-        "id": 1,
-        "task": "Wake up, early!",
-        "status": "in-progress",
-        "description": "We are going to delete you",
-        "createdAT": "2024-09-03 10:22:42.344782",
-        "updatedAT": null
-    },
-    {
         "id": 2,
         "task": "Todo",
         "status": "todo",
@@ -21,14 +13,6 @@
         "status": "done",
         "description": "We are going to delete you",
         "createdAT": "2024-09-03 10:22:42.344782",
-        "updatedAT": null
-    },
-    {
-        "id": 4,
-        "task": "\"Do exercise",
-        "status": "in-progress",
-        "description": "Run for 10 km\"",
-        "createdAT": "2024-09-03 10:23:14.726744",
         "updatedAT": null
     },
     {
