@@ -54,6 +54,7 @@ def update_json(user_data: dict, data: list[dict]) -> dict:
         data[ind]["task"] = updated_task
         if updated_description is not None:
             data[ind]["description"] = updated_description
+        data[ind]["updatedAT"] = str(datetime.datetime.now())
         write_json(data)
         print(f"Task updated successfully: (ID: {task_id})")
 
@@ -70,6 +71,7 @@ def update_status(task_id, status, data):
         data[ind]["status"] = Status.DONE.value
     elif "mark-todo" == status:
         data[ind]["status"] = Status.TODO.value
+    data[ind]["updatedAT"] = str(datetime.datetime.now())
     write_json(data)
 
 
